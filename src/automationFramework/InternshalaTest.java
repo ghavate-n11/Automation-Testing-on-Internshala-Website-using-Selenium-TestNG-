@@ -17,8 +17,8 @@ public class InternshalaTest {
 
     // Constants for credentials and paths
     private final String CHROME_DRIVER_PATH = "C:\\Users\\HP\\OneDrive\\Desktop\\Softwares\\chromedriver.exe";
-    private final String EMAIL = "tejasvchavan@coep.sveri.ac.in";
-    private final String PASSWORD = "Sveri@123";
+    private final String EMAIL = "xyz@gmail.com";
+    private final String PASSWORD = "Abc@123";
 
     @BeforeTest
     public void setup() {
@@ -48,7 +48,8 @@ public class InternshalaTest {
             Thread.currentThread().interrupt();
         }
 
-        WebElement loginBtn = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Login')]")));
+        WebElement loginBtn = wait
+                .until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Login')]")));
         loginBtn.click();
 
         wait.until(ExpectedConditions.urlContains("dashboard"));
@@ -80,7 +81,8 @@ public class InternshalaTest {
     @Test(priority = 4)
     public void openInternshipsPage() {
         try {
-            WebElement internships = wait.until(ExpectedConditions.elementToBeClickable(By.id("internships_new_superscript")));
+            WebElement internships = wait
+                    .until(ExpectedConditions.elementToBeClickable(By.id("internships_new_superscript")));
             internships.click();
         } catch (Exception e) {
             System.out.println("❌ Could not open internships page: " + e.getMessage());
@@ -90,7 +92,8 @@ public class InternshalaTest {
     @Test(priority = 5)
     public void selectInternshipCategory() {
         try {
-            WebElement category = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("input.chosen-search-input.default")));
+            WebElement category = wait.until(
+                    ExpectedConditions.elementToBeClickable(By.cssSelector("input.chosen-search-input.default")));
             category.sendKeys("Master Of Computer Application", Keys.ENTER);
         } catch (Exception e) {
             System.out.println("❌ Failed to select category: " + e.getMessage());
@@ -106,12 +109,14 @@ public class InternshalaTest {
             String applyURL = internshipURL.replace("/internship/detail/", "/student/interstitial/application/");
             driver.get(applyURL);
 
-            WebElement applyBtn = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='application-button']/button")));
+            WebElement applyBtn = wait
+                    .until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='application-button']/button")));
             applyBtn.click();
 
             try {
                 wait.until(ExpectedConditions.elementToBeClickable(By.id("search_button"))).click();
-                wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button.btn.btn-primary.education_incomplete"))).click();
+                wait.until(ExpectedConditions
+                        .elementToBeClickable(By.cssSelector("button.btn.btn-primary.education_incomplete"))).click();
             } catch (Exception inner) {
                 System.out.println("ℹ️ Already applied or process is different.");
                 openInternshipsPage();
@@ -125,7 +130,7 @@ public class InternshalaTest {
     public void fillApplicationForm() {
         try {
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cover_letter")))
-                .sendKeys("I am an enthusiastic coder and ready to take challenges and learn new things.");
+                    .sendKeys("I am an enthusiastic coder and ready to take challenges and learn new things.");
 
             driver.findElement(By.id("text_1081479")).sendKeys("Yes");
             driver.findElement(By.id("text_1081480")).sendKeys("https://github.com/ghavate-n11");
@@ -150,7 +155,8 @@ public class InternshalaTest {
     public void logout() {
         try {
             wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("div.profile_icon_right"))).click();
-            wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("span.glyphicon.pull-right.glyphicon-menu-down"))).click();
+            wait.until(ExpectedConditions
+                    .elementToBeClickable(By.cssSelector("span.glyphicon.pull-right.glyphicon-menu-down"))).click();
             wait.until(ExpectedConditions.elementToBeClickable(By.linkText("Logout"))).click();
         } catch (Exception e) {
             System.out.println("❌ Logout failed: " + e.getMessage());
@@ -159,11 +165,11 @@ public class InternshalaTest {
 
     @DataProvider(name = "dataprovider")
     public Object[][] contactIconProvider() {
-        return new Object[][]{
-            {"i.is-icon-instagram"},
-            {"i.is-icon-twitter"},
-            {"i.is-icon-youtube"},
-            {"i.is-icon-linkedin"},
+        return new Object[][] {
+                { "i.is-icon-instagram" },
+                { "i.is-icon-twitter" },
+                { "i.is-icon-youtube" },
+                { "i.is-icon-linkedin" },
         };
     }
 
