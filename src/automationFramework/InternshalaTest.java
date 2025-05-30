@@ -4,150 +4,163 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 import org.testng.annotations.*;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.List;
 
 public class InternshalaTest {
 
-    public static WebDriver driver;
-    public static JavascriptExecutor js;
-    public WebDriverWait wait;
+    private WebDriver driver;
+    private WebDriverWait wait;
+    private JavascriptExecutor js;
 
-    // Constants for credentials and paths
-    private final String CHROME_DRIVER_PATH = "C:\\Users\\HP\\OneDrive\\Desktop\\Softwares\\chromedriver.exe";
-    private final String EMAIL = "xyz@gmail.com";
-    private final String PASSWORD = "Abc@123";
+    // Constants
+    private static final String CHROME_DRIVER_PATH = "C:\\Users\\HP\\OneDrive\\Desktop\\Softwares\\chromedriver.exe";
+    private static final String BASE_URL = "https://internshala.com";
+    private static final String EMAIL = "tejasvchavan@coep.sveri.ac.in";
+    private static final String PASSWORD = "........";
+    private static final String INTERNSHIP_URL = BASE_URL + "/internship/detail/webflow-development-work-from-home-job-internship-at-codeacious-technologies-private-limited1587013074";
 
     @BeforeTest
     public void setup() {
         System.setProperty("webdriver.chrome.driver", CHROME_DRIVER_PATH);
         driver = new ChromeDriver();
         driver.manage().window().maximize();
+        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         js = (JavascriptExecutor) driver;
-        wait = new WebDriverWait(driver, Duration.ofSeconds(30));
     }
 
     @Test(priority = 1)
-    public void loginToInternshala() {
-        driver.get("https://internshala.com/login");
+    public void login() {
+        driver.get(BASE_URL + "/login");
 
-        WebElement email = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("email")));
-        email.clear();
-        email.sendKeys(EMAIL);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("email"))).sendKeys(EMAIL);
+        driver.findElement(By.id("password")).sendKeys(PASSWORD);
 
-        WebElement password = driver.findElement(By.id("password"));
-        password.clear();
-        password.sendKeys(PASSWORD);
+        System.out.println("⚠️ Please solve CAPTCHA within 8 seconds...");
+        sleep(8000);
 
-        System.out.println("⚠️ Solve the CAPTCHA manually within 60 seconds...");
-        try {
-            Thread.sleep(600); // Manual captcha wait
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-
-        WebElement loginBtn = wait
-                .until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Login')]")));
+        WebElement loginBtn = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Login')]")));
         loginBtn.click();
 
         wait.until(ExpectedConditions.urlContains("dashboard"));
-        System.out.println("✅ Login successful.");
+        Assert.assertTrue(driver.getCurrentUrl().contains("dashboard"), "❌ Login failed!");
+        System.out.println("✅ Logged in successfully.");
     }
 
-    @Test(dataProvider = "dataprovider", priority = 2)
-    public void clickContactIcons(String cssSelector) {
-        driver.get("https://internshala.com/contact");
+    @Test(dataProvider = "iconProvider", priority = 2)
+    public void clickSocialIcons(String iconSelector) {
+        driver.get(BASE_URL + "/contact");
+
         try {
-            WebElement icon = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(cssSelector)));
-            icon.click();
+            WebElement icon = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(iconSelector)));
+            js.executeScript("arguments[0].scrollIntoView(true);", icon);
+
+            WebElement parentLink = icon.findElement(By.xpath("./ancestor::a[1]"));
+            String originalWindow = driver.getWindowHandle();
+
+            parentLink.click();
+
+            // Wait for new tab to open
+            wait.until(driver -> driver.getWindowHandles().size() > 1);
+
+            List<String> tabs = new ArrayList<>(driver.getWindowHandles());
+            for (String tab : tabs) {
+                if (!tab.equals(originalWindow)) {
+                    driver.switchTo().window(tab);
+                    System.out.println("✅ Opened: " + driver.getTitle());
+                    driver.close();
+                }
+            }
+            driver.switchTo().window(originalWindow);
+            System.out.println("✅ Clicked and closed icon tab: " + iconSelector);
         } catch (Exception e) {
-            System.out.println("❌ Failed to click on icon [" + cssSelector + "]: " + e.getMessage());
+            System.out.println("❌ Error handling icon [" + iconSelector + "]: " + e.getMessage());
         }
     }
 
     @Test(priority = 3)
-    public void closeExtraTabs() {
-        ArrayList<String> tabs = new ArrayList<>(driver.getWindowHandles());
-        while (tabs.size() > 1) {
-            driver.switchTo().window(tabs.get(1));
-            driver.close();
-            tabs = new ArrayList<>(driver.getWindowHandles());
+    public void closeOtherTabs() {
+        List<String> tabs = new ArrayList<>(driver.getWindowHandles());
+        for (int i = 1; i < tabs.size(); i++) {
+            driver.switchTo().window(tabs.get(i)).close();
         }
         driver.switchTo().window(tabs.get(0));
+        System.out.println("✅ Closed all extra tabs.");
     }
 
     @Test(priority = 4)
-    public void openInternshipsPage() {
+    public void navigateToInternships() {
         try {
-            WebElement internships = wait
-                    .until(ExpectedConditions.elementToBeClickable(By.id("internships_new_superscript")));
-            internships.click();
+            WebElement internshipsBtn = wait.until(ExpectedConditions.elementToBeClickable(By.id("internships_new_superscript")));
+            internshipsBtn.click();
+            System.out.println("✅ Navigated to internships page.");
         } catch (Exception e) {
-            System.out.println("❌ Could not open internships page: " + e.getMessage());
+            System.out.println("❌ Failed to open internships page: " + e.getMessage());
         }
     }
 
     @Test(priority = 5)
-    public void selectInternshipCategory() {
+    public void selectCategory() {
         try {
-            WebElement category = wait.until(
-                    ExpectedConditions.elementToBeClickable(By.cssSelector("input.chosen-search-input.default")));
-            category.sendKeys("Master Of Computer Application", Keys.ENTER);
+            WebElement input = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("input.chosen-search-input.default")));
+            input.sendKeys("Master Of Computer Application", Keys.ENTER);
+            System.out.println("✅ Selected category.");
         } catch (Exception e) {
             System.out.println("❌ Failed to select category: " + e.getMessage());
         }
     }
 
     @Test(priority = 6)
-    public void applyToInternship() {
+    public void applyForInternship() {
         try {
-            String internshipURL = "https://internshala.com/internship/detail/webflow-development-work-from-home-job-internship-at-codeacious-technologies-private-limited1587013074";
-            driver.get(internshipURL);
+            driver.get(INTERNSHIP_URL);
+            String applyPage = INTERNSHIP_URL.replace("/internship/detail/", "/student/interstitial/application/");
+            driver.get(applyPage);
 
-            String applyURL = internshipURL.replace("/internship/detail/", "/student/interstitial/application/");
-            driver.get(applyURL);
-
-            WebElement applyBtn = wait
-                    .until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='application-button']/button")));
+            WebElement applyBtn = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='application-button']/button")));
             applyBtn.click();
 
             try {
                 wait.until(ExpectedConditions.elementToBeClickable(By.id("search_button"))).click();
-                wait.until(ExpectedConditions
-                        .elementToBeClickable(By.cssSelector("button.btn.btn-primary.education_incomplete"))).click();
-            } catch (Exception inner) {
-                System.out.println("ℹ️ Already applied or process is different.");
-                openInternshipsPage();
+                wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button.btn.btn-primary.education_incomplete"))).click();
+            } catch (Exception ignored) {
+                System.out.println("ℹ️ Already applied or alternate flow.");
             }
+
+            System.out.println("✅ Internship application triggered.");
         } catch (Exception e) {
-            System.out.println("❌ Error during internship application: " + e.getMessage());
+            System.out.println("❌ Error during application: " + e.getMessage());
         }
     }
 
     @Test(priority = 7)
-    public void fillApplicationForm() {
+    public void fillForm() {
         try {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cover_letter")))
-                    .sendKeys("I am an enthusiastic coder and ready to take challenges and learn new things.");
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cover_letter"))).sendKeys("I am an enthusiastic coder ready to take on challenges.");
 
             driver.findElement(By.id("text_1081479")).sendKeys("Yes");
             driver.findElement(By.id("text_1081480")).sendKeys("https://github.com/ghavate-n11");
             driver.findElement(By.id("text_1081481")).sendKeys("No");
 
             driver.findElement(By.name("submit")).click();
+            System.out.println("✅ Application form submitted.");
         } catch (Exception e) {
-            System.out.println("❌ Form submission failed: " + e.getMessage());
+            System.out.println("❌ Could not submit form: " + e.getMessage());
         }
     }
 
     @Test(priority = 8)
-    public void goBackToInternships() {
+    public void returnToInternships() {
         try {
-            wait.until(ExpectedConditions.elementToBeClickable(By.id("backToInternshipsCta"))).click();
+            WebElement backBtn = wait.until(ExpectedConditions.elementToBeClickable(By.id("backToInternshipsCta")));
+            backBtn.click();
+            System.out.println("✅ Returned to internships.");
         } catch (Exception e) {
-            System.out.println("❌ Return to internships failed: " + e.getMessage());
+            System.out.println("❌ Return failed: " + e.getMessage());
         }
     }
 
@@ -155,21 +168,26 @@ public class InternshalaTest {
     public void logout() {
         try {
             wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("div.profile_icon_right"))).click();
-            wait.until(ExpectedConditions
-                    .elementToBeClickable(By.cssSelector("span.glyphicon.pull-right.glyphicon-menu-down"))).click();
+            wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("span.glyphicon-menu-down"))).click();
             wait.until(ExpectedConditions.elementToBeClickable(By.linkText("Logout"))).click();
+            System.out.println("✅ Logged out successfully.");
         } catch (Exception e) {
             System.out.println("❌ Logout failed: " + e.getMessage());
         }
     }
 
-    @DataProvider(name = "dataprovider")
-    public Object[][] contactIconProvider() {
-        return new Object[][] {
-                { "i.is-icon-instagram" },
-                { "i.is-icon-twitter" },
-                { "i.is-icon-youtube" },
-                { "i.is-icon-linkedin" },
+    @Test(priority = 10)
+    public void sampleTest() {
+        System.out.println("✅ Sample test executed.");
+    }
+
+    @DataProvider(name = "iconProvider")
+    public Object[][] provideIcons() {
+        return new Object[][]{
+                {"i.is-icon-instagram"},
+                {"i.is-icon-twitter"},
+                {"i.is-icon-youtube"},
+                {"i.is-icon-linkedin"},
         };
     }
 
@@ -177,11 +195,16 @@ public class InternshalaTest {
     public void tearDown() {
         if (driver != null) {
             driver.quit();
+            System.out.println("🧹 Browser closed. Test suite completed.");
         }
     }
 
-    @Test
-    public void sampleTest() {
-        System.out.println("✅ Internshala automation test executed.");
+    // Utility Method
+    private void sleep(int milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 }

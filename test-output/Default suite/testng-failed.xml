@@ -5,10 +5,10 @@
     <classes>
       <class name="automationFramework.InternshalaTest">
         <methods>
-          <include name="closeExtraTabs"/>
+          <include name="clickSocialIcons" invocation-numbers="3"/>
           <include name="tearDown"/>
+          <include name="closeOtherTabs"/>
           <include name="setup"/>
-          <include name="loginToInternshala"/>
         </methods>
       </class> <!-- automationFramework.InternshalaTest -->
     </classes>
