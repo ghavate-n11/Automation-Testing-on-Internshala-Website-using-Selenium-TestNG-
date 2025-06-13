@@ -22,7 +22,7 @@ public class InternshalaTest {
     private static final String CHROME_DRIVER_PATH = "C:\\Users\\HP\\OneDrive\\Desktop\\Softwares\\chromedriver.exe";
     private static final String BASE_URL = "https://internshala.com";
     private static final String EMAIL = "tejasvchavan@coep.sveri.ac.in";
-    private static final String PASSWORD = "Sveri@123";
+    private static final String PASSWORD = "*******3";
     private static final String INTERNSHIP_URL = BASE_URL
             + "/internship/detail/webflow-development-work-from-home-job-internship-at-codeacious-technologies-private-limited1587013074";
 
