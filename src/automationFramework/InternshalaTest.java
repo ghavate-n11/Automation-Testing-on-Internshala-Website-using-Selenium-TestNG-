@@ -1,4 +1,4 @@
-package automationFramework;
+package automationFramework;// Not necessary but create one package for better understanding
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -21,8 +21,8 @@ public class InternshalaTest {
     // Constants
     private static final String CHROME_DRIVER_PATH = "C:\\Users\\HP\\OneDrive\\Desktop\\Softwares\\chromedriver.exe";
     private static final String BASE_URL = "https://internshala.com";
-    private static final String EMAIL = "tejasvchavan@coep.sveri.ac.in";
-    private static final String PASSWORD = "*******3";
+    private static final String EMAIL = "nilesjghavate11@gmail.com";//Update mail id as per your requirement 
+    private static final String PASSWORD = "*******3";//also password change as per your requirement 
     private static final String INTERNSHIP_URL = BASE_URL
             + "/internship/detail/webflow-development-work-from-home-job-internship-at-codeacious-technologies-private-limited1587013074";
 
