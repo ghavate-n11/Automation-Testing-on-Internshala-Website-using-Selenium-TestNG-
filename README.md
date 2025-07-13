@@ -53,31 +53,7 @@ To perform automation testing on Internshala’s core features like:
 ---
 
 ## 📁 Project Structure
-
-```
-
-Automation-Internshala/
-│
-├── src/
-│   ├── test/
-│   │   ├── java/
-│   │   │   ├── tests/
-│   │   │   │   ├── LoginTest.java
-│   │   │   │   ├── SearchTest.java
-│   │   │   │   └── ApplyNowTest.java
-│   │   │   ├── utils/
-│   │   │   │   └── BaseClass.java
-│   │   │   └── config/
-│   │   │       └── TestData.java
-│
-├── pom.xml
-├── testng.xml
-├── README.md
-└── screenshots/ (optional)
-
-````
-
----
+(Coming soon...)
 
 ## 🛠️ How to Run
 
