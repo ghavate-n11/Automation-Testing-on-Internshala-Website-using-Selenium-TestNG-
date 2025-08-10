@@ -19,6 +19,7 @@ public class InternshalaTest {
     private JavascriptExecutor js;
 
     // Constants
+    //static -
     private static final String CHROME_DRIVER_PATH = "C:\\Users\\HP\\OneDrive\\Desktop\\Softwares\\chromedriver.exe";
     private static final String BASE_URL = "https://internshala.com";
     private static final String EMAIL = "nilesjghavate11@gmail.com";//Update mail id as per your requirement 
